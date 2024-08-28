@@ -5,10 +5,10 @@ import { Folder } from "../models/folder";
 export const createFolder = async (req: any, res: Response) => {
   try {
     const { folder_name, vault_id, parent_folder_id } = req.body;
-    if (!folder_name || !vault_id) {
+    if (!folder_name) {
       return res
         .status(400)
-        .json({ message: "Please provide folder name and vault id" });
+        .json({ message: "Please provide folder name" });
     }
     const pool = await poolPromise;
     const result = await pool
@@ -35,6 +35,23 @@ export const getFoldersByVault = async (req: any, res: Response) => {
       .request()
       .input("vault_id", vault_id)
       .query("SELECT * FROM folders WHERE vault_id = @vault_id");
+
+    const folders: Folder[] = result.recordset;
+    res.status(200).json(folders);
+  } catch (err: any) {
+    res.status(500).json({ errorMessage: err.message });
+  }
+};
+
+// getFolder by parentFolderId
+export const getFoldersByParentFolderId = async (req: any, res: Response) => {
+  try {
+    const { parent_folder_id } = req.params;
+    const pool = await poolPromise;
+    const result = await pool
+      .request()
+      .input("parent_folder_id", parent_folder_id)
+      .query("SELECT * FROM folders WHERE parent_folder_id = @parent_folder_id");
 
     const folders: Folder[] = result.recordset;
     res.status(200).json(folders);

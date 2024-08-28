@@ -34,8 +34,7 @@ export const getVaults = async (req: any, res: Response) => {
 
     const pool = await poolPromise;
     const result = await pool.request()
-      .input('user_id', user_id)
-      .query('SELECT * FROM Vaults WHERE user_id = @user_id');
+      .query('SELECT * FROM Vaults');
 
     const vaults: Vault[] = result.recordset;
     res.status(200).json(vaults);

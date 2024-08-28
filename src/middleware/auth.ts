@@ -13,6 +13,6 @@ export const auth = (req: any, res: Response, next: NextFunction) => {
     req.user = decoded;
     next();
   } catch (err) {
-    res.status(401).json({ error: 'Token is not valid' });
+    res.status(401).json({ statusCode: 404, error: 'Token is not valid' });
   }
 };
