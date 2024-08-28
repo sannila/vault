@@ -11,6 +11,20 @@ export const createFolder = async (req: any, res: Response) => {
         .json({ message: "Please provide folder name" });
     }
     const pool = await poolPromise;
+
+    // Check for duplicates folder
+    const duplicate = await pool
+      .request()
+      .input("folder_name", folder_name)
+      .input("vault_id", vault_id)
+      .query(
+        "SELECT * FROM folders WHERE folder_name = @folder_name AND vault_id = @vault_id"
+      );
+    
+      if(duplicate.recordset.length > 0){
+        return res.status(409).json({statusCode: 409, message: "Folder already exists"})
+      }
+
     const result = await pool
       .request()
       .input("folder_name", folder_name)

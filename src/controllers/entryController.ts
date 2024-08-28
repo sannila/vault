@@ -79,7 +79,7 @@ export const getEntriesByFolder = async (req: any, res: Response) => {
     const result = await pool
       .request()
       .input("folder_id", folder_id)
-      .query("SELECT * FROM entries WHERE folder_id = @folder_id");
+      .query("SELECT * FROM entries WHERE folder_id = @folder_id AND deleted = 0");
 
     const entries: Entry[] = result.recordset;
     res.status(200).json(entries);
@@ -120,7 +120,7 @@ export const deleteEntry = async (req: any, res: Response) => {
       "Deleted",
       `Entry deleted with name: ${entry.entry_name}`
     );
-    res.status(200).json({ message: "Entry deleted successfully" });
+    res.status(200).json({ statusCode: 200, message: "Entry deleted successfully" });
   } catch (err: any) {
     res.status(500).json({ errorMessage: err.message });
   }
