@@ -28,7 +28,7 @@ export const createAuditLog = async (
 export const getAuditLogs = async (req: Request, res: Response) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query("SELECT * FROM AuditLogs");
+    const result = await pool.request().query("SELECT * FROM AuditLogs ORDER BY timestamp DESC");
     const auditLogs: AuditLog[] = result.recordset;
     res.status(200).json(auditLogs);
   } catch (err: any) {
