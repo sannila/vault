@@ -130,6 +130,7 @@ export const updateEntry = async (req: any, res: Response) => {
   try {
     const { entry_id } = req.params;
     const { entry_name, username, password, url, notes, folder_id } = req.body;
+    const user_id = req.user?.user_id;
     if (!entry_name || !folder_id) {
       return res
         .status(400)
@@ -151,15 +152,15 @@ export const updateEntry = async (req: any, res: Response) => {
       .query(
         `UPDATE entries SET entry_name = @entry_name, username = @username, password = @password, url = @url, notes = @notes, folder_id = @folder_id, updated_at = @updated_at WHERE entry_id = @entry_id`
       );
-
-    const entry: Entry = result.recordset[0];
+    
     await createAuditLog(
-      req.user?.user_id,
+      user_id,
       null,
-      entry.entry_id,
+      entry_id,
       "Updated",
       `Updated entry with name: ${entry_name}`
     );
+
     res
       .status(200)
       .json({ statusCode: 200, message: "Entry updated successfully" });
