@@ -71,6 +71,43 @@ export const createEntry = async (req: any, res: Response) => {
   }
 };
 
+export const getEntries = async (req: any, res: Response) => {
+  try {
+    const user_id = req.user?.user_id;
+    const pool = await poolPromise;
+    const result = await pool
+      .request()
+      .query("SELECT * FROM entries WHERE deleted = 0");
+
+    const entries: Entry[] = result.recordset;
+    res.status(200).json(entries);
+  } catch (err: any) {
+    res.status(500).json({ errorMessage: err.message });
+  }
+};
+
+// get entry by entryId
+export const getEntryById = async (req: any, res: Response) => {
+  try {
+    const { entry_id } = req.params;
+    const pool = await poolPromise;
+    const result = await pool
+      .request()
+      .input("entry_id", entry_id)
+      .query("SELECT * FROM entries WHERE entry_id = @entry_id AND deleted = 0");
+
+    if (result.recordset.length === 0) {
+      return res.status(404).json({ message: "Entry not found" });
+    }
+
+    const entry: Entry = result.recordset[0];
+    res.status(200).json(entry);
+  } catch (err: any) {
+    res.status(500).json({ errorMessage: err.message });
+  }
+};
+
+// get entry by folderId
 export const getEntriesByFolder = async (req: any, res: Response) => {
   try {
     const { folder_id } = req.params;
